@@ -80,8 +80,27 @@ def move(n,m,sol):
         fill(n,m, sol)
     else:
         dig(n,m, sol)
+def reset_options(n,m,n_bound,m_bound):
+    options = []
+    
+    min_n = n-2
+    max_n = n+3
+    min_m = m-2
+    max_m = m+3
 
+    max_m = m_bound -1 if max_m >= m_bound else max_m
+    min_m = 0 if min_m < 0 else min_m
 
+    max_n = n_bound -1 if max_n >= n_bound else max_n
+    min_n = 0 if min_n < 0 else min_n
+    for i in range(min_n, max_n):
+        for j in range(min_m, max_m):
+            if not(i == n and j == m):
+                options.append((i,j))
+    return options
+
+def select_neighboor(options):
+    return options.pop(random.randrange(len(options)))
 
 if __name__ == "__main__":
     # np.set_printoptions(formatter={'int': color_sign})
@@ -94,10 +113,10 @@ if __name__ == "__main__":
     best_solution = np.zeros((len(blocks_ratio), len(blocks_ratio[0])),dtype=int)
     best_value = evaluate(best_solution, blocks_ratio) 
     nb_restart = 50
-    limit = 5
-    itterations = 1000
-    init_temp = 10
-    
+    # limit = 5
+    itterations = 10000
+    init_temp = 2
+    options = []
 
     for i in range(nb_restart):
         sol = copy.deepcopy(best_solution)
@@ -106,9 +125,10 @@ if __name__ == "__main__":
         t = init_temp
         n = random.randrange(0,len(blocks_ratio))
         m = random.randrange(0,len(blocks_ratio[0]))
-        # sol_cost = evaluate(sol, blocks_ratio)
+        options = reset_options(n,m,n_bound, m_bound)
+        
         for j in range(itterations):
-            failed = 0
+            # failed = 0
             
 
             # m = j % len(blocks_ratio[0])
@@ -116,18 +136,12 @@ if __name__ == "__main__":
             temp_value = copy.deepcopy(value)
 
 
-            # temp_n = random.randrange(n-2, n+3)
-            # temp_n = n_bound -1 if temp_n >= n_bound else temp_n
-            # temp_n = 0 if temp_n < 0 else temp_n
-            
-            # temp_m = random.randrange(m-2, m+3)
-            # temp_m = m_bound -1 if temp_m >= m_bound else temp_m
-            # temp_m = 0 if temp_m < 0 else temp_m
+           
 
-
+            temp_n,temp_m = select_neighboor(options)
 
             #move(temp_n,temp_m,temp_sol)
-            move(n,m,temp_sol)
+            move(temp_n,temp_m,temp_sol)
             
             temp_value = evaluate(temp_sol,blocks_ratio)
             delta = value - temp_value  
@@ -135,17 +149,20 @@ if __name__ == "__main__":
             if delta < 0 or random.random() < math.exp(-delta/t):
                 sol = temp_sol
                 value = temp_value
-                failed = 0
-                # m = temp_m
-                # n = temp_n
+                # failed = 0
+                m = temp_m
+                n = temp_n
+                options = reset_options(n,m,n_bound,m_bound)
                 print(sol)
 
                 if value > best_value:
                     best_value = value
                     best_solution = sol
             else:
-                failed+=1
-                if failed > limit:
+                # failed+=1
+                # if failed > limit:
+                if not len(options):
+                    print('well')
                     break
             
             t = 0.999*t
