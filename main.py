@@ -75,6 +75,11 @@ def parce_building(filename):
     blocks_ratio = np.subtract(np.array(blocks_value),  np.array(blocks_cost))
     return blocks_ratio
     # print(blocks_ratio)
+def move(n,m,sol):
+    if sol[n][m]:
+        fill(n,m, sol)
+    else:
+        dig(n,m, sol)
 
 
 
@@ -83,49 +88,81 @@ if __name__ == "__main__":
     start = time.time()
     blocks_ratio = parce_building('./N200_M100') 
     
-    
+    n_bound, m_bound = blocks_ratio.shape
     comp = np.ones((len(blocks_ratio), len(blocks_ratio[0])),dtype=int)
     comp_cost = evaluate(comp, blocks_ratio)
-    best_solution = None
-    best_value = 0
-    nb_restart = 1
+    best_solution = np.zeros((len(blocks_ratio), len(blocks_ratio[0])),dtype=int)
+    best_value = evaluate(best_solution, blocks_ratio) 
+    nb_restart = 50
+    limit = 5
     itterations = 1000
-    init_temp = 100
+    init_temp = 10
+    
+
     for i in range(nb_restart):
-        sol = np.zeros((len(blocks_ratio), len(blocks_ratio[0])),dtype=int)
-        value = evaluate(sol, blocks_ratio)
-        
+        sol = copy.deepcopy(best_solution)
+        value = copy.deepcopy(best_value)
+
         t = init_temp
-        
+        n = random.randrange(0,len(blocks_ratio))
+        m = random.randrange(0,len(blocks_ratio[0]))
         # sol_cost = evaluate(sol, blocks_ratio)
         for j in range(itterations):
-            n = random.randrange(0,len(blocks_ratio))
-            m = random.randrange(0,len(blocks_ratio[0]))
+            failed = 0
+            
+
             # m = j % len(blocks_ratio[0])
             temp_sol = copy.deepcopy(sol)
             temp_value = copy.deepcopy(value)
 
 
+            # temp_n = random.randrange(n-2, n+3)
+            # temp_n = n_bound -1 if temp_n >= n_bound else temp_n
+            # temp_n = 0 if temp_n < 0 else temp_n
+            
+            # temp_m = random.randrange(m-2, m+3)
+            # temp_m = m_bound -1 if temp_m >= m_bound else temp_m
+            # temp_m = 0 if temp_m < 0 else temp_m
 
-            if temp_sol[n][m]:
-                fill(n,m,temp_sol)
-            else:
-                dig(n,m,temp_sol)
+
+
+            #move(temp_n,temp_m,temp_sol)
+            move(n,m,temp_sol)
+            
             temp_value = evaluate(temp_sol,blocks_ratio)
-
             delta = value - temp_value  
 
             if delta < 0 or random.random() < math.exp(-delta/t):
                 sol = temp_sol
                 value = temp_value
-              
+                failed = 0
+                # m = temp_m
+                # n = temp_n
+                print(sol)
+
                 if value > best_value:
                     best_value = value
                     best_solution = sol
+            else:
+                failed+=1
+                if failed > limit:
+                    break
+            
             t = 0.999*t
-    
+
+
+            n = random.randrange(n-2, n+3)
+            n = n_bound -1 if n >= n_bound else n
+            n = 0 if n < 0 else n
+            
+            m = random.randrange(m-2, m+3)
+            m = m_bound -1 if m >= m_bound else m
+            m = 0 if m < 0 else m
+
+    print(best_value)
     end =time.time()
-    # print(best_solution)
-    print_sol(best_solution)
-    # print(comp_cost)
+    print(best_solution)
+    
+    #print_sol(best_solution)
+    print(comp_cost)
     # print(end-start)
