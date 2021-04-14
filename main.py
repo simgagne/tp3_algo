@@ -30,12 +30,15 @@ def fill(n, m, sol):
             sol[i][j] = 0
         start = (start -1) if (start -1) >=0  else start
         end = (end +1) if (end +1) <= len(sol[0]) else end
-
+def print_sol(sol):
+    for i in range(len(sol)):
+        for j in range(len(sol[0])):
+            if sol[i][j]:
+                print(i, j, flush=True)
 def evaluate(sol, blocks_ratio):
     cost = 0
     for i in range(len(blocks_ratio)):
         if not np.any(sol[i]):
-            print('used')
             break
         for j in range(len(blocks_ratio[0])):
             if sol[i][j]:
@@ -86,7 +89,7 @@ if __name__ == "__main__":
     best_solution = None
     best_value = 0
     nb_restart = 1
-    itterations = 10000
+    itterations = 1000
     init_temp = 100
     for i in range(nb_restart):
         sol = np.zeros((len(blocks_ratio), len(blocks_ratio[0])),dtype=int)
@@ -99,7 +102,6 @@ if __name__ == "__main__":
             n = random.randrange(0,len(blocks_ratio))
             m = random.randrange(0,len(blocks_ratio[0]))
             # m = j % len(blocks_ratio[0])
-            print(m)
             temp_sol = copy.deepcopy(sol)
             temp_value = copy.deepcopy(value)
 
@@ -122,8 +124,8 @@ if __name__ == "__main__":
                     best_solution = sol
             t = 0.999*t
     
-        print(best_value)
     end =time.time()
-    print(best_solution)
-    print(comp_cost)
-    print(end-start)
+    # print(best_solution)
+    print_sol(best_solution)
+    # print(comp_cost)
+    # print(end-start)
