@@ -99,20 +99,22 @@ if __name__ == "__main__":
     best_solution = np.zeros((len(blocks_ratio), len(blocks_ratio[0])),dtype=int)
     best_value = evaluate(best_solution, blocks_ratio) 
     nb_restart = 1000
-    # limit = 5
-    # itterations = 1000
-    init_temp = 2
-    options = []
-    # for i in range 
+    to_visit = []
+    for i in range(n_bound):
+        for j in range(m_bound):
+            to_visit.append((i,j))
+   
 
     for i in range(nb_restart):
-        print("restarted")
         # sol = copy.deepcopy(best_solution)
         # value = copy.deepcopy(best_value)
 
         # t = init_temp
-        n = random.randrange(0,len(blocks_ratio))
-        m = random.randrange(0,len(blocks_ratio[0]))
+        print(len(to_visit))
+        if not len(to_visit):
+            break
+        n,m = to_visit.pop(random.randrange(len(to_visit)))
+       
         # options = reset_options(n,m,n_bound, m_bound)
         better = True
         while better:
@@ -133,8 +135,10 @@ if __name__ == "__main__":
 
             for i in range(min_n, max_n):
                 for j in range(min_m, max_m):
-                    temp_sol = copy.deepcopy(best_solution) 
+                    temp_sol = copy.deepcopy(best_solution)
                     move(i,j,temp_sol)
+                    # print(temp_sol)
+
                     temp_value = evaluate(temp_sol, blocks_ratio)
                     if not best_neighboor_value or temp_value > best_neighboor_value:
                         best_neighboor_value = temp_value

@@ -102,7 +102,7 @@ def move(n,m,sol):
 def main():
     # np.set_printoptions(formatter={'int': color_sign})
     start = time.time()
-    blocks_ratio = parce_building('./N200_M100') 
+    blocks_ratio = parce_building('./N25_M30') 
     
     cdef int n_bound = len(blocks_ratio)
     cdef int m_bound = len(blocks_ratio[0])
@@ -117,7 +117,6 @@ def main():
     # for i in range 
 
     for i in range(nb_restart):
-        print("restarted")
         # sol = copy.deepcopy(best_solution)
         # value = copy.deepcopy(best_value)
 
@@ -145,7 +144,8 @@ def main():
 
             for i in range(min_n, max_n):
                 for j in range(min_m, max_m):
-                    temp_sol = copy.deepcopy(best_solution) 
+                    temp_sol = copy.deepcopy(best_solution)
+                    print(temp_sol) 
                     move(i,j,temp_sol)
                     temp_value = evaluate(temp_sol, blocks_ratio)
                     if not best_neighboor_value or temp_value > best_neighboor_value:
