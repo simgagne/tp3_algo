@@ -1,17 +1,25 @@
 
 import colorama
 import numpy as np
+cimport numpy as np
 import copy
 import random
 import time
 import math
+
+DTYPE=np.int
+ctypedef np.int_t DTYPE_t
+
+
 def color_sign(x):
     c = colorama.Fore.GREEN if x > 0 else colorama.Fore.RED
     return f'{c}{x}'
 
-def dig(n, m, sol):
-    start = m
-    end = m + 1
+cpdef dig(int n,int m, np.ndarray[DTYPE_t, ndim=2] sol):
+    cdef int start = m
+    cdef int end = m + 1
+    cdef int i = 0
+    cdef int j = 0
     for i in reversed(range(n +1)):
         # if np.all(sol[i] == 1):
         #     print('dig shortcutt')
@@ -20,27 +28,30 @@ def dig(n, m, sol):
             sol[i][j] = 1
         start = (start -1) if (start -1) >=0  else start
         end = (end +1) if (end +1) <= len(sol[0]) else end
-def fill(n, m, sol):
-    start = m
-    end = m+1
-    for i in range(n, len(sol)):
+cpdef fill(int n,int m, np.ndarray[DTYPE_t, ndim=2] sol):
+    cdef int start = m
+    cdef int end = m+1
+    cdef int i = 0
+    cdef int j = 0
+    cdef int max_depth = len(sol)
+    for i in range(n, max_depth):
         if not np.any(sol[i]):
             break
         for j in range(start, end):
             sol[i][j] = 0
         start = (start -1) if (start -1) >=0  else start
         end = (end +1) if (end +1) <= len(sol[0]) else end
-# def print_sol(sol):
-#     for i in range(len(sol)):
-#         for j in range(len(sol[0])):
-#             if sol[i][j]:
-#                 print(i, j, flush=True)
-def evaluate(sol, blocks_ratio):
-    cost = 0
-    for i in range(len(blocks_ratio)):
+
+cpdef evaluate( np.ndarray[DTYPE_t, ndim=2] sol, np.ndarray[DTYPE_t, ndim=2] blocks_ratio):
+    cdef int cost = 0
+    cdef int i = 0
+    cdef int n_dim = len(blocks_ratio)
+    cdef int m_dim = len(blocks_ratio[0])
+    cdef int j = 0
+    for i in range(n_dim):
         if not np.any(sol[i]):
             break
-        for j in range(len(blocks_ratio[0])):
+        for j in range(m_dim):
             if sol[i][j]:
                 cost += blocks_ratio[i][j]
     return cost
@@ -88,21 +99,21 @@ def move(n,m,sol):
 # def select_neighboor(options):
 #     return options.pop(random.randrange(len(options)))
 
-if __name__ == "__main__":
+def main():
     # np.set_printoptions(formatter={'int': color_sign})
     start = time.time()
     blocks_ratio = parce_building('./N200_M100') 
     
-    n_bound, m_bound = blocks_ratio.shape
-    comp = np.ones((len(blocks_ratio), len(blocks_ratio[0])),dtype=int)
-    comp_cost = evaluate(comp, blocks_ratio)
-    best_solution = np.zeros((len(blocks_ratio), len(blocks_ratio[0])),dtype=int)
-    best_value = evaluate(best_solution, blocks_ratio) 
-    nb_restart = 1000
+    cdef int n_bound = len(blocks_ratio)
+    cdef int m_bound = len(blocks_ratio[0])
+    cdef np.ndarray comp = np.ones((len(blocks_ratio), len(blocks_ratio[0])),dtype=DTYPE)
+    cdef int comp_cost = evaluate(comp, blocks_ratio)
+    cdef np.ndarray best_solution = np.zeros((len(blocks_ratio), len(blocks_ratio[0])),dtype=DTYPE)
+    cdef int best_value = evaluate(best_solution, blocks_ratio) 
+    cdef int nb_restart = 1000
     # limit = 5
     # itterations = 1000
-    init_temp = 2
-    options = []
+    #options = []
     # for i in range 
 
     for i in range(nb_restart):
@@ -111,6 +122,7 @@ if __name__ == "__main__":
         # value = copy.deepcopy(best_value)
 
         # t = init_temp
+        
         n = random.randrange(0,len(blocks_ratio))
         m = random.randrange(0,len(blocks_ratio[0]))
         # options = reset_options(n,m,n_bound, m_bound)
@@ -197,7 +209,7 @@ if __name__ == "__main__":
             # m = 0 if m < 0 else m
 
     print(best_value)
-    end =time.time()
+    end = time.time()
     print(best_solution)
     
     #print_sol(best_solution)
