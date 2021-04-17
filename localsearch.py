@@ -16,8 +16,8 @@ def dig(n, m, sol):
         # if np.all(sol[i] == 1):
         #     print('dig shortcutt')
         #     break
-        for j in range(start,end):
-            sol[i][j] = True
+        # for j in range(start,end):
+        sol[i][start:end] = True
         start = (start -1) if (start -1) >=0  else start
         end = (end +1) if (end +1) <= len(sol[0]) else end
 def fill(n, m, sol):
@@ -26,8 +26,8 @@ def fill(n, m, sol):
     for i in range(n, len(sol)):
         if not np.any(sol[i]):
             break
-        for j in range(start, end):
-            sol[i][j] = False
+        # for j in range(start, end):
+        sol[i][start:end] = False
         start = (start -1) if (start -1) >=0  else start
         end = (end +1) if (end +1) <= len(sol[0]) else end
 def print_sol(sol):
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     comp_cost = evaluate(comp, blocks_ratio)
     best_solution = np.full((n_bound,m_bound), False)
     best_value = evaluate(best_solution, blocks_ratio) 
-    nb_restart = 10000
+    nb_restart = 1000
     to_visit = []
     for i in range(n_bound):
         for j in range(m_bound):
