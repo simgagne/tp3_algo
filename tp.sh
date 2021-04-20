@@ -30,33 +30,11 @@ while getopts "e:a:pt" o; do
         e)
             INST=$OPTARG
             ;;
-        a)
-            case $OPTARG in
-                glouton)
-                    ALG=0
-                ;;
-                progdyn)
-                    ALG=1
-                ;;
-                approx)
-                    ALG=2
-                ;;
-                *)
-                    echo "Mauvais choix d'algorithme" >&2
-                    exit 1
-                ;;
-            esac
-            ;;
-        p)
-            PRINT=1
-            ;;
-        t)
-            TIME=1
-            ;;
+      
     esac
 done
 
-./exec $INST $ALG $TIME $PRINT
-#python3 main.py $INST $ALG $TIME $PRINT
+#./exec $INST $ALG $TIME $PRINT
+python3 ./localsearch.py $INST
 #java main.java $INST $ALG $TIME $PRINT
 #...
